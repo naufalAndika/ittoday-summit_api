@@ -1,19 +1,13 @@
 require('./db/mongoose')
-const Mountain = require('./models/mountain')
+const express = require('express')
+const userRouter = require('./routers/user')
 
-const mountain = new Mountain({
-  name: 'Semeru',
-  height: 2800,
-  location: 'Probolinggo'
+const app = express()
+const port = process.env.PORT || 3000
+
+app.use(express.json())
+app.use(userRouter)
+
+app.listen(port, () => {
+  console.log('server is up on port ' + port)
 })
-
-const main = async () => {
-  try {
-    await mountain.save()
-    console.log(mountain)
-  } catch (e) {
-    console.log(e)
-  }
-}
-
-// main()

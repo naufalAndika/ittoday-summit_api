@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs')
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -16,10 +18,19 @@ const userSchema = new mongoose.Schema({
       }
     }
   },
+  password: {
+    type: String,
+    required: true
+  },
   identityNumber: {
     type: String,
     unique: true,
-    required: true
+    required: true,
+    validate(value) {
+      if (!validator.isNumeric(value)) {
+        throw new Error('Identity Number is Invalid!')
+      }
+    }
   },
   birthDate: {
     type: Date,
@@ -49,7 +60,47 @@ const userSchema = new mongoose.Schema({
     year: {
       type: Number
     }
+  }],
+  tokens: [{
+    token: {
+      type: String
+    }
   }]
+})
+
+userSchema.methods.generateToken = async function () {
+  const user = this
+  const token = jwt.sign({ _id: user._id.toString() }, 'summit', {
+    expiresIn: '6 Hours'
+  })
+  user.tokens = user.tokens.concat({ token })
+  
+  await user.save()
+  return token
+}
+
+userSchema.statics.findByEmailAndPassword = async (email, password) => {
+  const user = await User.findOne({ email })
+  if (!user) {
+    throw new Error('Email or Password Doesnt Match!')
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password)
+  if (!isMatch) {
+    throw new Error('Email or Password Doesnt Match!')
+  }
+
+  return user
+}
+
+userSchema.pre('save', async function (next) {
+  const user = this
+
+  if (user.isModified('password')) {
+    user.password = await bcrypt.hash(user.password, 8)
+  }
+
+  next()
 })
 
 const User = mongoose.model('User', userSchema)
