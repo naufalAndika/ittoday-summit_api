@@ -1,6 +1,7 @@
 const express = require('express')
 const Event = require('../models/event')
 const auth = require('../middleware/auth')
+const Mountain = require('../models/mountain')
 
 const router = new express.Router()
 
@@ -63,6 +64,21 @@ router.get('/event/:id', async (req, res) => {
   }
 })
 
+router.get('/event/mountain/:id', async (req, res) => {
+  try {
+    const mountain = await Mountain.findById(req.params.id)
+
+    if (!mountain) {
+      res.status(404).send()
+    }
+
+    await mountain.populate('events').execPopulate()
+
+    res.send(mountain.events)
+  } catch (e) {
+    res.status(500).send()
+  }
+})
 
 router.post('/event/join/:id', auth, async (req, res) => {
   try {
