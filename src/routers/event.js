@@ -41,6 +41,15 @@ router.get('/events', async (req, res) => {
   }
 })
 
+router.get('/event/me', auth, async (req, res) => {
+  try {
+    await req.user.populate('events').execPopulate()
+    res.send(req.user.events)
+  } catch (e) {
+    res.status(500).send()
+  }
+})
+
 router.get('/event/:id', async (req, res) => {
   try {
     const event = await Event.findById(req.params.id)
@@ -53,6 +62,7 @@ router.get('/event/:id', async (req, res) => {
     res.status(500).send()
   }
 })
+
 
 router.post('/event/join/:id', auth, async (req, res) => {
   try {

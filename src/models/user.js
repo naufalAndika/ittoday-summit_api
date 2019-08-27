@@ -68,6 +68,12 @@ const userSchema = new mongoose.Schema({
   }]
 })
 
+userSchema.virtual('events', {
+  ref: 'Event',
+  localField: '_id',
+  foreignField: 'members.member'
+})
+
 userSchema.methods.generateToken = async function () {
   const user = this
   const token = jwt.sign({ _id: user._id.toString() }, 'summit', {
