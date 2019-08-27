@@ -13,10 +13,6 @@ const eventSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
-  numberOfMembers: {
-    type: Number,
-    default: 0
-  },
   maximumMembers: {
     type: Number,
     required: true
@@ -32,12 +28,44 @@ const eventSchema = new mongoose.Schema({
     required: true,
     ref: 'User'
   },
+  members: [{
+    member: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  }],
   mountain: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: 'Mountain'
   }
 })
+
+eventSchema.virtual('events', {
+  ref: 'Event',
+  localField: 'members',
+  foreignField: '_id'
+})
+
+eventSchema.methods.joinEvent = async function (user) {
+  const event = this
+  
+  event.members = event.members.concat({
+    member: user
+  })
+  await event.save()
+  return event
+}
+
+eventSchema.methods.leaveEvent = async function (user) {
+  const event = this
+
+  event.members = event.members.filter((member) => {
+    return member.member != user._id.toString()
+  })
+  await event.save()
+  return event
+}
 
 const Event = mongoose.model('Event', eventSchema)
 

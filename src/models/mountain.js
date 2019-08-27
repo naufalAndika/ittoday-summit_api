@@ -22,6 +22,17 @@ const mountainSchema = new mongoose.Schema({
   }
 })
 
+mountainSchema.virtual('events', {
+  ref: 'Event',
+  localField: '_id',
+  foreignField: 'mountain'
+})
+
+mountainSchema.statics.findByName = async (name) => {
+  const mountain = await Mountain.findOne({ name })
+  return mountain
+}
+
 const Mountain = mongoose.model('Mountain', mountainSchema)
 
 module.exports = Mountain
