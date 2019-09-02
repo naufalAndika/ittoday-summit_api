@@ -27,39 +27,6 @@ router.get('/user/me', auth, async (req, res) => {
   res.send(req.user)
 })
 
-router.post('/guide', async (req, res) => {
-  const guideRole = 2
-  const guide = new User({
-    ...req.body,
-    role: guideRole
-  })
-
-  try {
-    await guide.save()
-    const token = await guide.generateToken()
-
-    res.status(201).send({
-      guide,
-      token
-    })
-  } catch (e) {
-    res.status(400).send(e)
-  }
-})
-
-router.get('/guides', async (req, res) => {
-  try {
-    const guideRole = 2
-    const guides = await User.find({
-      role: guideRole
-    })
-
-    res.send(guides)
-  } catch (e) {
-    res.status(500).send()
-  }
-})
-
 router.post('/login', async (req, res) => {
   try {
     const user = await User.findByEmailAndPassword(req.body.email, req.body.password)
