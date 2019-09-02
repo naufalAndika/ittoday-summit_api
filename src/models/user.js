@@ -22,16 +22,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  identityNumber: {
-    type: String,
-    unique: true,
-    required: true,
-    validate(value) {
-      if (!validator.isNumeric(value)) {
-        throw new Error('Identity Number is Invalid!')
-      }
-    }
-  },
   birthDate: {
     type: Date,
     required: true
