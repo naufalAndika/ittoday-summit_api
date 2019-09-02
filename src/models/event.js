@@ -39,6 +39,8 @@ const eventSchema = new mongoose.Schema({
     required: true,
     ref: 'Mountain'
   }
+}, {
+  timestamps: true
 })
 
 eventSchema.virtual('events', {

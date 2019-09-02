@@ -17,6 +17,8 @@ const activitySchema = new mongoose.Schema({
     required: true,
     ref: 'User'
   }
+}, {
+  timestamps: true
 })
 
 const Activity = mongoose.model('Activity', activitySchema)

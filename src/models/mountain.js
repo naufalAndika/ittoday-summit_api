@@ -20,6 +20,8 @@ const mountainSchema = new mongoose.Schema({
   content: {
     type: String
   }
+}, {
+  timestamps: true
 })
 
 mountainSchema.virtual('events', {

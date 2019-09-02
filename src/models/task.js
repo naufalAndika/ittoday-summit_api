@@ -16,10 +16,12 @@ const taskSchema = new mongoose.Schema({
     ref: 'User'
   },
   createdFor: {
-    tyoe: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: 'User'
   }
+}, {
+  timestamps: true
 })
 
 const Task = mongoose.model('Task', taskSchema)

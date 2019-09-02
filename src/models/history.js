@@ -11,6 +11,8 @@ const historySchema = new mongoose.Schema({
     required: true,
     ref: 'Event'
   }
+}, {
+  timestamps: true
 })
 
 const History = mongoose.model('History', historySchema)

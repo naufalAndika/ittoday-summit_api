@@ -66,6 +66,8 @@ const userSchema = new mongoose.Schema({
       type: String
     }
   }]
+}, {
+  timestamps: true
 })
 
 userSchema.virtual('events', {
