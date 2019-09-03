@@ -14,6 +14,7 @@ const guideSchema = new mongoose.Schema({
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true
   },
   mountains: [{
@@ -25,6 +26,16 @@ const guideSchema = new mongoose.Schema({
 }, {
   timestamps: true
 })
+
+guideSchema.methods.addMountains = async function (mountains) {
+  const guide = this
+  
+  mountains.forEach((mountain) => {
+    guide.mountains = guide.mountains.concat({ mountain })
+  })
+
+  await guide.save()
+}
 
 const Guide = mongoose.model('Guide', guideSchema)
 

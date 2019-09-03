@@ -2,14 +2,13 @@ const express = require('express')
 const Mountain = require('../models/mountain')
 const router = new express.Router()
 const auth = require('../middleware/auth')
-// const dbUtils = require('../utils/index').db
 
 router.post('/mountain', async (req, res) => {
   const mountain = new Mountain(req.body)
 
   try {
     await mountain.save()
-    res.status(401).send(mountain)
+    res.status(201).send(mountain)
   } catch (e) {
     res.status(400).send()
   }
@@ -28,17 +27,6 @@ router.get('/mountain/:id', async (req, res) => {
     res.status(500).send()
   }
 })
-
-// --belom kelar
-// router.patch('/mountain', auth, async (req, res) => {
-//   const isValidUpdates = dbUtils.checkUpdatesValidity(['name', 'coverImgPath', 'height', 'location', 'content'], Object.keys(req.body))
-
-//   if (!isValidUpdates) {
-//     res.status(400).send('Invalid Update')
-//   }
-
-  
-// })
 
 router.get('/mountain', async (req, res) => {
   try {

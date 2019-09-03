@@ -4,13 +4,6 @@ const User = require('../models/user')
 const router = new express.Router()
 
 router.post('/guide', async (req, res) => {
-  const guideField = {
-    identityNumber: req.body.identityNumber,
-    mountains: req.body.mountains
-  }
-  delete req.body.identityNumber
-  delete req.body.mountains
-  
   const guideRole = 2
   const user = new User({
     ...req.body,
@@ -22,11 +15,10 @@ router.post('/guide', async (req, res) => {
     const token = await user.generateToken()
 
     const guide = new Guide({
-      ...guideField,
+      identityNumber: req.body.identityNumber,
       user: user._id
     })
-
-    await guide.save()
+    await guide.addMountains(req.body.mountains)
     await guide.populate('user').execPopulate()
 
     res.status(201).send({
@@ -40,7 +32,7 @@ router.post('/guide', async (req, res) => {
 
 router.get('/guides', async (req, res) => {
   try {
-    const guides = await User.find({})
+    const guides = await Guide.find({})
     guides.forEach((guide) => {
       guide.populate('user').execPopulate()
     })
