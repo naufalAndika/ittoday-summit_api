@@ -32,10 +32,8 @@ router.post('/guide', async (req, res) => {
 
 router.get('/guides', async (req, res) => {
   try {
-    const guides = await Guide.find({})
-    guides.forEach((guide) => {
-      guide.populate('user').execPopulate()
-    })
+    let guides = await Guide.find({})
+    guides = await Guide.populate(guides, 'user')
 
     res.send(guides)
   } catch (e) {
