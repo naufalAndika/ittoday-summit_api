@@ -14,7 +14,7 @@ router.post('/mountain', async (req, res) => {
 
 router.get('/mountain/:id', async (req, res) => {
   try {
-    const mountain = await Mountain.findById(req.params.id)
+    const mountain = await mountainService.getMountainById(req.params.id)
 
     if (!mountain) {
       res.status(404).send()

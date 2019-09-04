@@ -13,6 +13,16 @@ const createMountain = async (data) => {
   }
 }
 
+const getMountainById = async (id) => {
+  try {
+    const mountain = await Mountain.findById(id)
+    return mountain
+  } catch (e) {
+    throw e
+  }
+}
+
 module.exports = {
-  createMountain
+  createMountain,
+  getMountainById
 }
