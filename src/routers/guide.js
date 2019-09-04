@@ -1,30 +1,23 @@
 const express = require('express')
+const router = new express.Router()
 const Guide = require('../models/guide')
 const User = require('../models/user')
-const router = new express.Router()
+const guideService = require('../services/guide')
 
 router.post('/guide', async (req, res) => {
-  const guideRole = 2
-  const user = new User({
-    ...req.body,
-    role: guideRole
-  })
-
   try {
-    await user.save()
-    const token = await user.generateToken()
-
-    const guide = new Guide({
+    const guideRole = 2
+    const userData = {
+      ...req.body,
+      role: guideRole
+    }
+    const guideData = {
       identityNumber: req.body.identityNumber,
-      user: user._id
-    })
-    await guide.addMountains(req.body.mountains)
-    await guide.populate('user').execPopulate()
+      mountains: req.body.mountains
+    }
+    const response = await guideService.create(userData, guideData)
+    res.status(201).send(response)
 
-    res.status(201).send({
-      guide,
-      token
-    })
   } catch (e) {
     res.status(400).send(e)
   }
@@ -32,9 +25,7 @@ router.post('/guide', async (req, res) => {
 
 router.get('/guides', async (req, res) => {
   try {
-    let guides = await Guide.find({})
-    guides = await Guide.populate(guides, 'user')
-
+    const guides = await guideService.list()
     res.send(guides)
   } catch (e) {
     res.status(500).send()
