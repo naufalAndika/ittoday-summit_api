@@ -1,6 +1,6 @@
 const User = require('../models/user')
 
-const createUser = async (data) => {
+const create = async (data) => {
   const user = new User({
     ...data,
   })
@@ -49,7 +49,7 @@ const logoutAll = async (user) => {
 }
 
 module.exports = {
-  createUser,
+  create,
   login,
   logout,
   logoutAll

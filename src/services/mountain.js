@@ -1,6 +1,6 @@
 const Mountain = require('../models/mountain')
 
-const createMountain = async (data) => {
+const create = async (data) => {
   const mountain = new Mountain({
     ...data
   })
@@ -13,7 +13,7 @@ const createMountain = async (data) => {
   }
 }
 
-const getMountainById = async (id) => {
+const findById = async (id) => {
   try {
     const mountain = await Mountain.findById(id)
     return mountain
@@ -22,7 +22,27 @@ const getMountainById = async (id) => {
   }
 }
 
+const findByName = async (name) => {
+  try {
+    const mountain = await Mountain.findByName(name)
+    return mountain
+  } catch (e) {
+    throw e
+  }
+}
+
+const list = async () => {
+  try {
+    const mountains = await Mountain.find({})
+    return mountains
+  } catch (e) {
+    throw e
+  }
+}
+
 module.exports = {
-  createMountain,
-  getMountainById
+  create,
+  findById,
+  findByName,
+  list
 }

@@ -5,7 +5,7 @@ const mountainService = require('../services/mountain')
 
 router.post('/mountain', async (req, res) => {
   try {
-    const mountain = await mountainService.createMountain(req.body)
+    const mountain = await mountainService.create(req.body)
     res.status(201).send(mountain)
   } catch (e) {
     res.status(400).send()
@@ -14,7 +14,7 @@ router.post('/mountain', async (req, res) => {
 
 router.get('/mountain/:id', async (req, res) => {
   try {
-    const mountain = await mountainService.getMountainById(req.params.id)
+    const mountain = await mountainService.findById(req.params.id)
 
     if (!mountain) {
       res.status(404).send()
@@ -28,7 +28,7 @@ router.get('/mountain/:id', async (req, res) => {
 
 router.get('/mountain', async (req, res) => {
   try {
-    const mountain = await Mountain.findByName(req.query.q)
+    const mountain = await mountainService.findByName(req.query.q)
     res.send(mountain)
   } catch (e) {
     res.status(500).send()
@@ -37,7 +37,7 @@ router.get('/mountain', async (req, res) => {
 
 router.get('/mountains', async (req, res) => {
   try {
-    const mountains = await Mountain.find({})
+    const mountains = await mountainService.list()
     res.send(mountains)
   } catch (e) {
     res.status(500).send()
