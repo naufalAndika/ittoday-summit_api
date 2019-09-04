@@ -1,10 +1,8 @@
 const User = require('../models/user')
 
 const createUser = async (data) => {
-  const userRole = 1
   const user = new User({
     ...data,
-    role: userRole
   })
 
   try {

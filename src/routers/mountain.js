@@ -1,13 +1,11 @@
 const express = require('express')
-const Mountain = require('../models/mountain')
 const router = new express.Router()
-const auth = require('../middleware/auth')
+const Mountain = require('../models/mountain')
+const mountainService = require('../services/mountain')
 
 router.post('/mountain', async (req, res) => {
-  const mountain = new Mountain(req.body)
-
   try {
-    await mountain.save()
+    const mountain = await mountainService.createMountain(req.body)
     res.status(201).send(mountain)
   } catch (e) {
     res.status(400).send()

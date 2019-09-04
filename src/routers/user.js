@@ -6,6 +6,7 @@ const userService = require('../services/user')
 
 router.post('/user', async (req, res) => {
   try {
+    req.body.role = 1
     const response = await userService.createUser(req.body)
     res.status(201).send(response)
   } catch (e) {
