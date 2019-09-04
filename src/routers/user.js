@@ -1,23 +1,13 @@
 const express = require('express')
-const User = require('../models/user')
 const router = new express.Router()
+const User = require('../models/user')
 const auth = require('../middleware/auth')
+const userService = require('../services/user')
 
 router.post('/user', async (req, res) => {
-  const userRole = 1
-  const user = new User({
-    ...req.body,
-    role: userRole
-  })
-
-  try{
-    await user.save()
-    const token = await user.generateToken()
-
-    res.status(201).send({
-      user,
-      token
-    })
+  try {
+    const response = await userService.createUser(req.body)
+    res.status(201).send(response)
   } catch (e) {
     res.status(400).send(e)
   }
@@ -29,13 +19,8 @@ router.get('/user/me', auth, async (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
-    const user = await User.findByEmailAndPassword(req.body.email, req.body.password)
-    const token = await user.generateToken()
-    console.log(user)
-    res.send({
-      user,
-      token
-    })
+    const response = await userService.login(req.body.email, req.body.password)
+    res.send(response)
   } catch (e) {
     res.status(400).send()
   } 
