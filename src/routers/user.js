@@ -25,7 +25,7 @@ router.post('/login', async (req, res) => {
     const response = await userService.login(req.body.email, req.body.password)
     res.send(response)
   } catch (e) {
-    res.status(400).send()
+    res.status(400).send(e)
   } 
 })
 

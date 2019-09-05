@@ -20,6 +20,7 @@ const create = async (data) => {
 const login = async (email, password) => {
   try {
     const user = await User.findByEmailAndPassword(email, password)
+    console.log(user)
     const token = await user.generateToken()
     return {
       user,

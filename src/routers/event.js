@@ -1,16 +1,15 @@
 const express = require('express')
+const router = new express.Router()
 const Event = require('../models/event')
 const auth = require('../middleware/auth')
 const Mountain = require('../models/mountain')
+const eventService = require('../services/event')
 
-const router = new express.Router()
 
 router.post('/event', auth, async (req, res) => {
-  const event = new Event(req.body)
-  event.leader = req.user
-  
   try {
-    await event.save()
+    req.body.leader = req.user
+    const event = await eventService.create(req.body)
     res.status(201).send(event)
   } catch (e) {
     res.status(400)
@@ -35,7 +34,7 @@ router.post('/event/leader/:id', auth, async (req, res) => {
 
 router.get('/events', async (req, res) => {
   try {
-    const events = await Event.find({})
+    const events = await eventService.list()
     res.send(events)
   } catch (e) {
     res.status(500).send()
