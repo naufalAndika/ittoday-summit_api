@@ -1,7 +1,5 @@
 const express = require('express')
 const router = new express.Router()
-const Guide = require('../models/guide')
-const User = require('../models/user')
 const guideService = require('../services/guide')
 
 router.post('/guide', async (req, res) => {
@@ -19,7 +17,7 @@ router.post('/guide', async (req, res) => {
     res.status(201).send(response)
 
   } catch (e) {
-    res.status(400).send(e)
+    res.status(e.code).send(e.message)
   }
 })
 

@@ -25,6 +25,7 @@ const list = async () => {
   try {
     const guides = await Guide.find({})
     await Guide.populate(guides, 'user')
+    
     return guides
   } catch (e) {
     throw e

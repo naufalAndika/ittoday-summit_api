@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
+const BadRequest = require('../errors/BadRequest')
 
 const guideSchema = new mongoose.Schema({
   identityNumber: {
@@ -8,7 +9,7 @@ const guideSchema = new mongoose.Schema({
     required: true,
     validate(value) {
       if (!validator.isNumeric(value)) {
-        throw new Error('Identity Number is Invalid!')
+        throw new BadRequest('Invalid identity number!')
       }
     }
   },
