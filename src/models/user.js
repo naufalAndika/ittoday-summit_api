@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
+const Unauthorized = require('../errors/unauthorized')
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -86,12 +87,12 @@ userSchema.methods.generateToken = async function () {
 userSchema.statics.findByEmailAndPassword = async (email, password) => {
   const user = await User.findOne({ email })
   if (!user) {
-    throw new Error('Email or Password Doesnt Match!')
+    throw new Unauthorized('Email or password doenst match!')
   }
 
   const isMatch = await bcrypt.compare(password, user.password)
   if (!isMatch) {
-    throw new Error('Email or Password Doesnt Match!')
+    throw new Unauthorized('Email or password doenst match!')
   }
 
   return user
