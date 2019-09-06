@@ -1,4 +1,6 @@
-class BadRequest extends Error {
+const BaseError = require('../errors/BaseError')
+
+class BadRequest extends BaseError {
   constructor (message) {
     super(message)
     this.message = message

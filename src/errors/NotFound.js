@@ -1,4 +1,6 @@
-class NotFound extends Error {
+const BaseError = require('../errors/BaseError')
+
+class NotFound extends BaseError {
   constructor (message) {
     super(message)
     this.message = message

@@ -1,9 +1,7 @@
 const User = require('../models/user')
 
 const create = async (data) => {
-  const user = new User({
-    ...data,
-  })
+  const user = new User(data)
 
   try {
     await user.save()
@@ -13,7 +11,7 @@ const create = async (data) => {
       token
     }
   } catch (e) {
-    throw e
+    e.throwError()
   }
 }
 
@@ -26,7 +24,7 @@ const login = async (email, password) => {
       token
     }
   } catch (e) {
-    throw e
+    e.throwError()
   }
 }
 
@@ -35,7 +33,7 @@ const logout = async (user, currentToken) => {
     user.tokens = user.tokens.filter((token) => token.token != currentToken)
     await user.save()
   } catch (e) {
-    throw e
+    e.throwError()
   }
 }
 
@@ -44,7 +42,7 @@ const logoutAll = async (user) => {
     user.tokens = []
     await user.save()
   } catch (e) {
-    throw e
+    e.throwError()
   }
 }
 

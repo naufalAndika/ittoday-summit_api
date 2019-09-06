@@ -17,7 +17,7 @@ const create = async (userData, guideData) => {
       token: response.token
     }
   } catch (e) {
-    throw e
+    e.throwError()
   } 
 }
 
@@ -28,7 +28,7 @@ const list = async () => {
     
     return guides
   } catch (e) {
-    throw e
+    e.throwError()
   }
 }
 

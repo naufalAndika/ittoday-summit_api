@@ -1,7 +1,10 @@
 const Event = require('../models/event')
 const PendingEventMember = require('../models/pendingEventMember')
+const User = require('../models/user')
 const mountainService = require('../services/mountain')
 const activityService = require('../services/activity.js')
+const NotFound = require('../errors/NotFound')
+const Unauthorized = require('../errors/Unauthorized')
 
 const create = async (data) => {
   const event = new Event(data)
@@ -9,16 +12,21 @@ const create = async (data) => {
     await event.save()
     return event
   } catch (e) {
-    throw e
+    e.throwError()
   }
 }
 
 const findById = async (id) => {
   try {
     const event = await Event.findById(id)
+
+    if (!event) {
+      throw new NotFound('Event not found!')
+    }
+
     return event
   } catch (e) {
-    throw e
+    e.throwError()
   }
 }
 
@@ -27,34 +35,39 @@ const list = async () => {
     const events = await Event.find({})
     return events
   } catch (e) {
-    throw e
+    e.throwError()
   }
 }
 
 const userEvent = async (user) => {
   try {
     let events = []
-    
+
     await user.populate('events').execPopulate()
     await user.populate('leadEvents').execPopulate()
     events = events.concat(user.events).concat(user.leadEvents)
-    
+
     return events
   } catch (e) {
-    throw e
+    e.throwError()
   }
 }
 
 const detail = async (id) => {
   try {
     const event = await Event.findById(id)
+
+    if (!event) {
+      throw new NotFound('Event not found!')
+    }
+
     await event.populate('mountain').execPopulate()
     await event.populate('leader').execPopulate()
-    // await Event.populate(event, 'members')
-    
+    await User.populate(event.members, 'member')
+
     return event
   } catch (e) {
-    throw e
+    e.throwError()
   }
 }
 
@@ -62,15 +75,19 @@ const findByMountainId = async (id) => {
   try {
     const mountain = await mountainService.findById(id)
     await mountain.populate('events').execPopulate()
-    
+
+    if (!mountain) {
+      throw new NotFound('Mountain not found!')
+    }
+
     const events = mountain.events
     await Event.populate(events, 'leader')
     await Event.populate(events, 'mountain')
-    // populate member
-    
+    await User.populate(event.members, 'member')
+
     return events
   } catch (e) {
-    throw e
+    e.throwError()
   }
 }
 
@@ -79,7 +96,7 @@ const removeMember = async (event, member) => {
     await event.removeMember(member)
     return event
   } catch (e) {
-    throw e
+    e.throwError()
   }
 }
 
@@ -90,7 +107,7 @@ const join = async (event, user) => {
       event,
       user
     })
-    
+
     await activityService.createActivity({
       sender: user,
       receiver: event.leader,
@@ -108,7 +125,7 @@ const join = async (event, user) => {
       message: 'Request Sent!'
     }
   } catch (e) {
-    throw e
+    e.throwError()
   }
 }
 
@@ -118,7 +135,7 @@ const pending = async (data) => {
     await pendingMember.save()
     return pendingMember
   } catch (e) {
-    throw e
+    e.throwError()
   }
 }
 
@@ -130,7 +147,7 @@ const pendingMembersList = async (event, leader) => {
       })
       return pendingMembers
     } catch (e) {
-      throw e
+      e.throwError()
     }
   }
 }
@@ -146,14 +163,14 @@ const acceptJoin = async (id, user) => {
         const event = await pendingMember.accept()
         return event
       }
-      // throw 404
+      throw new NotFound('Not found!')
     }
 
     if (pendingMember.event.isLeader(user)) {
       const event = await pendingMember.accept()
       return event
     }
-    // throw 401 bukan leader
+    throw new Unauthorized('Unauthorized!')
   } catch (e) {
     throw e
   }

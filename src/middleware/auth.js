@@ -5,10 +5,13 @@ const Unauthorized = require('../errors/Unauthorized')
 const auth = async (req, res, next) => {
   try {
     const token = req.header('Authorization').replace('Bearer ', '')
-    const decodedToken = jwt.verify(token, 'summit', (error, response) => {
+    let decodedToken
+    jwt.verify(token, 'summit', (error, response) => {
+      console.log(error, response)
       if (error) {
         throw new Unauthorized('Token invalid')
       }
+      decodedToken = response
     })
 
     const user = await User.findOne({

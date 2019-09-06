@@ -1,4 +1,6 @@
-class Unauthorized extends Error {
+const BaseError = require('../errors/BaseError')
+
+class Unauthorized extends BaseError {
   constructor (message) {
     super(message)
     this.message

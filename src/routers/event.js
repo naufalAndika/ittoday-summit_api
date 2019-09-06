@@ -4,14 +4,13 @@ const Event = require('../models/event')
 const auth = require('../middleware/auth')
 const eventService = require('../services/event')
 
-
 router.post('/event', auth, async (req, res) => {
   try {
     req.body.leader = req.user
     const event = await eventService.create(req.body)
     res.status(201).send(event)
   } catch (e) {
-    res.status(400)
+    res.status(e.code).send(e.message)
   }
 })
 
@@ -52,13 +51,9 @@ router.get('/event/me', auth, async (req, res) => {
 router.get('/event/:id', async (req, res) => {
   try {
     const event = await eventService.detail(req.params.id)
-    if (!event) {
-      res.status(404).send()
-    }
-
     res.send(event)
   } catch (e) {
-    res.status(500).send(e)
+    res.status(e.code).send(e.message)
   }
 })
 
