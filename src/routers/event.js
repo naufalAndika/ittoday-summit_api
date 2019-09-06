@@ -2,7 +2,6 @@ const express = require('express')
 const router = new express.Router()
 const Event = require('../models/event')
 const auth = require('../middleware/auth')
-const Mountain = require('../models/mountain')
 const eventService = require('../services/event')
 
 
@@ -43,73 +42,71 @@ router.get('/events', async (req, res) => {
 
 router.get('/event/me', auth, async (req, res) => {
   try {
-    await req.user.populate('events').execPopulate()
-    res.send(req.user.events)
+    const events = await eventService.userEvent(req.user)
+    res.send(events)
   } catch (e) {
-    res.status(500).send()
+    res.status(500).send(e)
   }
 })
 
 router.get('/event/:id', async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id)
+    const event = await eventService.detail(req.params.id)
     if (!event) {
       res.status(404).send()
     }
 
     res.send(event)
   } catch (e) {
-    res.status(500).send()
+    res.status(500).send(e)
   }
 })
 
 router.get('/event/mountain/:id', async (req, res) => {
   try {
-    const mountain = await Mountain.findById(req.params.id)
-
-    if (!mountain) {
-      res.status(404).send()
-    }
-
-    await mountain.populate('events').execPopulate()
-
-    res.send(mountain.events)
+    const events = await eventService.findByMountainId(req.params.id)
+    res.send(events)
   } catch (e) {
-    res.status(500).send()
+    res.status(500).send(e)
   }
 })
 
 router.post('/event/join/:id', auth, async (req, res) => {
   try {
-    let event = await Event.findById(req.params.id)
-
-    if (!event) {
-      res.status(404).send({
-        error: 'Unable to Find Event!'
-      })
-    }
-
-    event = await event.joinEvent(req.user)
-    res.send(event)
+    const event = await eventService.findById(req.params.id)
+    const response = await eventService.join(event, req.user)
+    res.send(response)
   } catch (e) {
-    res.status(500).send()
+    res.status(500).send(e)
   }
 })
 
 router.post('/event/leave/:id', auth, async (req, res) => {
   try {
-    let event = await Event.findById(req.params.id)
-    
-    if (!event) {
-      res.status(404).send({
-        error: 'Unable to Find Event!'
-      })
-    }
-
-    event = await event.leaveEvent(req.user)
+    let event = await eventService.findById(req.params.id)
+    event = await eventService.removeMember(event, req.user)
     res.send(event)
   } catch (e) {
-    res.status(500).send()
+    res.status(500).send(e)
+  }
+})
+
+router.get('/event/members/pending/:id', auth, async (req, res) => {
+  try {
+    const event = await eventService.findById(req.params.id)
+    const pendingMembers = await eventService.pendingMembersList(event, req.user)
+    res.send(pendingMembers)
+  } catch (e) {
+    res.status(500).send(e)
+  }
+})
+
+router.post('/event/accept/:id', auth, async (req, res) => {
+  try {
+    const event = await eventService.acceptJoin(req.params.id, req.user)
+    res.send(event)
+  } catch (e) {
+    res.status(500).send(e)
   }
 })
 

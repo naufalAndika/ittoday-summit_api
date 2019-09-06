@@ -66,6 +66,12 @@ userSchema.virtual('events', {
   foreignField: 'members.member'
 })
 
+userSchema.virtual('leadEvents', {
+  ref: 'Event',
+  localField: '_id',
+  foreignField: 'leader'
+})
+
 userSchema.methods.generateToken = async function () {
   const user = this
   const token = jwt.sign({ _id: user._id.toString() }, 'summit', {

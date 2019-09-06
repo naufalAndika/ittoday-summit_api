@@ -49,7 +49,7 @@ eventSchema.virtual('events', {
   foreignField: '_id'
 })
 
-eventSchema.methods.joinEvent = async function (user) {
+eventSchema.methods.join = async function (user) {
   const event = this
   
   event.members = event.members.concat({
@@ -59,7 +59,7 @@ eventSchema.methods.joinEvent = async function (user) {
   return event
 }
 
-eventSchema.methods.leaveEvent = async function (user) {
+eventSchema.methods.removeMember = async function (user) {
   const event = this
 
   event.members = event.members.filter((member) => {

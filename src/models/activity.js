@@ -4,6 +4,10 @@ const activitySchema = new mongoose.Schema({
   content: {
     type: String
   },
+  isRead: {
+    type: Boolean,
+    default: false
+  },
   sender: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

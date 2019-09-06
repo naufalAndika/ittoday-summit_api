@@ -18,15 +18,22 @@ const pendingEventMemberSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
-  },
-  invitedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
   }
 }, {
   timestamps: true
 })
+
+pendingEventMemberSchema.methods.accept = async function () {
+  const pendingMember = this
+  
+  await pendingMember.populate('event').execPopulate()
+  await pendingMember.populate('user').execPopulate()
+  
+  await pendingMember.event.join(pendingMember.user)
+  const event = pendingMember.event
+  await pendingMember.remove()
+  return event
+}
 
 const PendingEventMember = mongoose.model('PendingEventMember', pendingEventMemberSchema)
 
