@@ -46,11 +46,12 @@ const userSchema = new mongoose.Schema({
     role: {
       type: String
     },
-    mountain_name: {
-      type: String
+    mountain: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Mountain'
     },
-    year: {
-      type: Number
+    date: {
+      type: Date
     }
   }],
   tokens: [{
@@ -74,6 +75,18 @@ userSchema.virtual('leadEvents', {
   foreignField: 'leader'
 })
 
+userSchema.virtual('receivedActivity', {
+  ref: 'Activity',
+  localField: '_id',
+  foreignField: 'receiver'
+})
+
+userSchema.virtual('sentActivity', {
+  ref: 'Activity',
+  localField: '_id',
+  foreignField: 'sender'
+})
+
 userSchema.methods.generateToken = async function () {
   const user = this
   const token = jwt.sign({ _id: user._id.toString() }, 'summit')
@@ -95,6 +108,22 @@ userSchema.statics.findByEmailAndPassword = async (email, password) => {
   }
 
   return user
+}
+
+userSchema.methods.addExperience = async function (event) {
+  const user = this
+
+  let exp = {
+    role: 1,
+    mountain: event.mountain,
+    date: event.finishAt
+  }
+  if (user._id.toString() === event.leader.toString()) {
+    exp.role = 2
+  }
+
+  user.experiences = user.experiences.concat(exp)
+  await user.save()
 }
 
 userSchema.pre('save', async function (next) {

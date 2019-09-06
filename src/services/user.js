@@ -46,9 +46,31 @@ const logoutAll = async (user) => {
   }
 }
 
+const activity = async (user) => {
+  try {
+    let activity = []
+
+    await user.populate('receivedActivity').execPopulate()
+
+    activity = activity.concat(user.receivedActivity)
+    return activity
+  } catch (e) {
+    e.throwError()
+  }
+}
+
+const addExperience = async (event) => {
+  await event.populate('members.member').execPopulate()
+  event.members.forEach(async (member) => {
+    await member.member.addExperience(event)
+  })
+}
+
 module.exports = {
   create,
   login,
   logout,
-  logoutAll
+  logoutAll,
+  activity,
+  addExperience
 }

@@ -8,6 +8,10 @@ const activitySchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  isDone: {
+    type: Boolean,
+    default: false
+  },
   action: {
     type: String
   },

@@ -3,15 +3,19 @@ const PendingEventMember = require('../models/pendingEventMember')
 const User = require('../models/user')
 const mountainService = require('../services/mountain')
 const activityService = require('../services/activity.js')
+const userService = require('../services/user')
 const NotFound = require('../errors/NotFound')
-const Unauthorized = require('../errors/Unauthorized')
+const promiseTimeout = require('../utils/index').promiseTimeout
 
 const create = async (data) => {
   const event = new Event(data)
   try {
     await event.save()
+    const now = Date.now()
+    promiseTimeout(event.finishAt - now, finish(event._id))
     return event
   } catch (e) {
+    console.log(e)
     e.throwError()
   }
 }
@@ -39,7 +43,7 @@ const list = async () => {
   }
 }
 
-const userEvent = async (user) => {
+const findByUser = async (user) => {
   try {
     let events = []
 
@@ -55,7 +59,7 @@ const userEvent = async (user) => {
 
 const detail = async (id) => {
   try {
-    const event = await Event.findById(id)
+    const event = await findById(id)
 
     if (!event) {
       throw new NotFound('Event not found!')
@@ -73,18 +77,7 @@ const detail = async (id) => {
 
 const findByMountainId = async (id) => {
   try {
-    const mountain = await mountainService.findById(id)
-    await mountain.populate('events').execPopulate()
-
-    if (!mountain) {
-      throw new NotFound('Mountain not found!')
-    }
-
-    const events = mountain.events
-    await Event.populate(events, 'leader')
-    await Event.populate(events, 'mountain')
-    await User.populate(event.members, 'member')
-
+    const events = await mountainService.events(id)
     return events
   } catch (e) {
     e.throwError()
@@ -108,14 +101,15 @@ const join = async (event, user) => {
       user
     })
 
-    await activityService.createActivity({
+    await activityService.create({
       sender: user,
       receiver: event.leader,
       event,
+      action: 'event:' + event._id,
       content: user.name + ' want to join ' + event.title
     })
 
-    await activityService.createActivity({
+    await activityService.create({
       receiver: user,
       event,
       content: 'You requested to join ' + event.title
@@ -154,37 +148,86 @@ const pendingMembersList = async (event, leader) => {
 
 const acceptJoin = async (id, user) => {
   try {
-    const pendingMember = await PendingEventMember.findById(id)
-    await pendingMember.populate('user').execPopulate()
-    await pendingMember.populate('event').execPopulate()
+    const event = await findById(id)
+    await event.join(user)
 
-    if (pendingMember.confirmedByLeader) {
-      if (pendingMember.user === user) {
-        const event = await pendingMember.accept()
-        return event
-      }
-      throw new NotFound('Not found!')
-    }
-
-    if (pendingMember.event.isLeader(user)) {
-      const event = await pendingMember.accept()
-      return event
-    }
-    throw new Unauthorized('Unauthorized!')
+    return event
   } catch (e) {
     throw e
+  }
+}
+
+const changeLeader = async (id, leader) => {
+  try {
+    const event = await findById(id)
+    await event.changeLead(leader)
+    return event
+  } catch (e) {
+    console.log(e)
+    e.throwError()
+  }
+}
+
+const finish = async (id) => {
+  try {
+    const event = await findById(id)
+    event.members.forEach(async (member) => {
+      let data = await activityService.create({
+        content: 'Finish your event!',
+        action: 'finish:' + event._id,
+        receiver: member.member
+      })
+    })
+    await activityService.create({
+      content: 'Finish your event!',
+      action: 'finish:' + event._id,
+      receiver: event.leader
+    })
+  } catch (e) {
+    e.throwError()
+  }
+}
+
+const confirmFinish = async (id, member) => {
+  try {
+    const event = await findById(id)
+    await event.finish(member)
+
+    if (event.finishAll) {
+      userService.addExperience(event)
+    }
+  } catch (e) {
+    console.log(e)
+    e.throwError()
+  }
+}
+
+const finishNow = async (id) => {
+  try {
+    const event = await findById(id)
+    event.finishAt = Date.now()
+    await finish(id)
+    
+    return {
+      message: 'Go confirm it!'
+    }
+  } catch (e) {
+    e.throwError()
   }
 }
 
 module.exports = {
   create,
   list,
-  userEvent,
+  findByUser,
   detail,
   findByMountainId,
   removeMember,
   findById,
   join,
   pendingMembersList,
-  acceptJoin
+  acceptJoin,
+  changeLeader,
+  confirmFinish,
+  finishNow
 }

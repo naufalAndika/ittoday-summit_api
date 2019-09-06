@@ -42,7 +42,7 @@ router.get('/events', async (req, res) => {
 
 router.get('/event/me', auth, async (req, res) => {
   try {
-    const events = await eventService.userEvent(req.user)
+    const events = await eventService.findByUser(req.user)
     res.send(events)
   } catch (e) {
     res.status(500).send(e)
@@ -63,7 +63,8 @@ router.get('/event/mountain/:id', async (req, res) => {
     const events = await eventService.findByMountainId(req.params.id)
     res.send(events)
   } catch (e) {
-    res.status(500).send(e)
+    console.log(e)
+    res.status(e.code).send(e.message)
   }
 })
 
@@ -106,6 +107,13 @@ router.post('/event/accept/:id', auth, async (req, res) => {
   }
 })
 
-// router.post('/event/:id/invite')
+router.post('/event/finish/:id', async (req, res) => {
+  try {
+    const response = await eventService.finishNow(req.params.id)
+    res.send(response)
+  } catch (e) {
+    res.status(e.code).send(e.message)
+  }
+})
 
 module.exports = router

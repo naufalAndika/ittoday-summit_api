@@ -44,6 +44,10 @@ const eventSchema = new mongoose.Schema({
     member: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
+    },
+    isFinish: {
+      type: Boolean,
+      default: false
     }
   }],
   mountain: {
@@ -84,6 +88,42 @@ eventSchema.methods.removeMember = async function (user) {
 eventSchema.methods.isLeader = function (user) {
   const event = this
   return event.leader.toString() === user._id.toString()
+}
+
+eventSchema.methods.changeLead = async function (leader) {
+  const event = this
+  
+  const member = event.leader
+  event.leader = leader
+  await event.save()
+  await event.join(member)
+
+  return event
+}
+
+eventSchema.methods.finish = async function (member) {
+  const event = this
+
+  event.populate({
+    path: 'members.member',
+    match: {
+      _id: member.toString()
+    }
+  }).execPopulate()
+
+  event.members[0].isFinish = true
+  await event.save()
+}
+
+eventSchema.methods.finishAll = function () {
+  const event = this
+
+  let finished = true
+  event.members.forEach((member) => {
+    finished = finished && member.isFinish
+  })
+
+  return finished
 }
 
 const Event = mongoose.model('Event', eventSchema)
