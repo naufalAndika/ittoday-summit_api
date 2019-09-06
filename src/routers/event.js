@@ -3,8 +3,9 @@ const router = new express.Router()
 const Event = require('../models/event')
 const auth = require('../middleware/auth')
 const eventService = require('../services/event')
+const cors = require('cors')
 
-router.post('/event', auth, async (req, res) => {
+router.post('/event', [auth, cors()], async (req, res) => {
   try {
     req.body.leader = req.user
     const event = await eventService.create(req.body)

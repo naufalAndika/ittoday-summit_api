@@ -13,6 +13,10 @@ const guideSchema = new mongoose.Schema({
       }
     }
   },
+  isPromoted: {
+    type: Boolean,
+    default: false
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -22,6 +26,10 @@ const guideSchema = new mongoose.Schema({
     mountain: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Mountain'
+    },
+    price: {
+      type: Number,
+      default: 0
     }
   }]
 }, {

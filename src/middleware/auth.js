@@ -7,7 +7,6 @@ const auth = async (req, res, next) => {
     const token = req.header('Authorization').replace('Bearer ', '')
     let decodedToken
     jwt.verify(token, 'summit', (error, response) => {
-      console.log(error, response)
       if (error) {
         throw new Unauthorized('Token invalid')
       }

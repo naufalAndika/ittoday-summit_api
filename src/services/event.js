@@ -8,6 +8,7 @@ const Unauthorized = require('../errors/Unauthorized')
 
 const create = async (data) => {
   const event = new Event(data)
+  console.log(data)
   try {
     await event.save()
     return event

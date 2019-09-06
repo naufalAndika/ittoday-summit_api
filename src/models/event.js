@@ -23,6 +23,18 @@ const eventSchema = new mongoose.Schema({
   brochureImgPath: {
     type: String
   },
+  type: {
+    type: Number,
+    default: 1
+  },
+  price: {
+    type: Number,
+    default: 0
+  },
+  isPromoted: {
+    type: Boolean,
+    default: false
+  },
   leader: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
