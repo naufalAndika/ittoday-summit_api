@@ -26,7 +26,16 @@ router.get('/guides', async (req, res) => {
     const guides = await guideService.list()
     res.send(guides)
   } catch (e) {
-    res.status(500).send()
+    res.status(e.code).send(e.message)
+  }
+})
+
+router.get('/guides/mountain/:id', async (req, res) => {
+  try {
+    const guides = await guideService.findByMountain(req.params.id)
+    res.send(guides)
+  } catch (e) {
+    res.status(e.code).send(e.message)
   }
 })
 

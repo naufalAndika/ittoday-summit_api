@@ -8,13 +8,12 @@ const activitySchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  action: {
+    type: String
+  },
   sender: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
-  },
-  event: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Event'
   },
   receiver: {
     type: mongoose.Schema.Types.ObjectId,

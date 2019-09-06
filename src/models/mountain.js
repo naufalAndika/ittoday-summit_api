@@ -30,6 +30,12 @@ mountainSchema.virtual('events', {
   foreignField: 'mountain'
 })
 
+mountainSchema.virtual('guides', {
+  ref: 'Guide',
+  localField: '_id',
+  foreignField: 'mountains.mountain'
+})
+
 mountainSchema.statics.findByName = async (name) => {
   const mountain = await Mountain.findOne({ name })
   return mountain

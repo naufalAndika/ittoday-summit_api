@@ -1,5 +1,6 @@
 const Guide = require('../models/guide')
 const userService = require('../services/user')
+const mountainService = require('../services/mountain')
 
 const create = async (userData, guideData) => {
   try {
@@ -32,7 +33,26 @@ const list = async () => {
   }
 }
 
+const findByMountain = async (id) => {
+  try {
+    const guides = await mountainService.guides(id)
+    await Guide.populate(guides, 'user')
+    await Guide.populate(guides, {
+      path: 'mountains.mountain',
+      match: {
+        '_id': id.toString()
+      }
+    })
+
+    return guides
+  } catch (e) {
+    console.log(e)
+    e.throwError()
+  }
+}
+
 module.exports = {
   create,
-  list
+  list,
+  findByMountain
 }

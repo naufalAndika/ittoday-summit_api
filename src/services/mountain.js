@@ -49,9 +49,21 @@ const list = async () => {
   }
 }
 
+const guides = async (id) => {
+  try {
+    const mountain = await Mountain.findById(id)
+    await mountain.populate('guides').execPopulate()
+
+    return mountain.guides
+  } catch (e) {
+    e.throwError()
+  }
+}
+
 module.exports = {
   create,
   findById,
   findByName,
-  list
+  list,
+  guides
 }
