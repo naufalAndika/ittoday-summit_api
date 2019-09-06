@@ -2,7 +2,8 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
-const Unauthorized = require('../errors/unauthorized')
+const Unauthorized = require('../errors/Unauthorized')
+const BadRequest = require('../errors/BadRequest')
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -15,7 +16,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     validate(value) {
       if (!validator.isEmail(value)) {
-        throw new Error('Email is Invalid!')
+        throw new BadRequest('Invalid email!')
       }
     }
   },
@@ -31,7 +32,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     validate(value) {
       if (!validator.isMobilePhone(value)) {
-        throw new Error('Phone Number is Invalid!')
+        throw new BadRequest('Invalid phone number!')
       }
     }
   },

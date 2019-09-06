@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
-const Unauthorized = require('../errors/unauthorized')
+const Unauthorized = require('../errors/Unauthorized')
 
 const auth = async (req, res, next) => {
   try {

@@ -1,4 +1,5 @@
 const Mountain = require('../models/mountain')
+const NotFound = require('../errors/NotFound')
 
 const create = async (data) => {
   const mountain = new Mountain({
@@ -16,6 +17,11 @@ const create = async (data) => {
 const findById = async (id) => {
   try {
     const mountain = await Mountain.findById(id)
+    
+    if (!mountain) {
+      throw new NotFound('Mountain not found!')
+    }
+    
     return mountain
   } catch (e) {
     throw e
@@ -25,6 +31,11 @@ const findById = async (id) => {
 const findByName = async (name) => {
   try {
     const mountain = await Mountain.findByName(name)
+
+    if (!mountain) {
+      throw new NotFound('Mountain not found!')
+    }
+
     return mountain
   } catch (e) {
     throw e
