@@ -75,9 +75,7 @@ userSchema.virtual('leadEvents', {
 
 userSchema.methods.generateToken = async function () {
   const user = this
-  const token = jwt.sign({ _id: user._id.toString() }, 'summit', {
-    expiresIn: '6 Hours'
-  })
+  const token = jwt.sign({ _id: user._id.toString() }, 'summit')
   user.tokens = user.tokens.concat({ token })
   
   await user.save()
