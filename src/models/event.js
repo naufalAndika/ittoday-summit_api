@@ -69,6 +69,11 @@ eventSchema.methods.removeMember = async function (user) {
   return event
 }
 
+eventSchema.methods.isLeader = function (user) {
+  const event = this
+  return event.leader.toString() === user._id.toString()
+}
+
 const Event = mongoose.model('Event', eventSchema)
 
 module.exports = Event

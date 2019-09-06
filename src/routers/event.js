@@ -110,4 +110,6 @@ router.post('/event/accept/:id', auth, async (req, res) => {
   }
 })
 
+// router.post('/event/:id/invite')
+
 module.exports = router

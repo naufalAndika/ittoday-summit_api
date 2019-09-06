@@ -85,20 +85,20 @@ const removeMember = async (event, member) => {
 
 const join = async (event, user) => {
   try {
-    let data = await pending({
+    await pending({
       confirmedByUser: true,
       event,
       user
     })
     
-    data = await activityService.createActivity({
+    await activityService.createActivity({
       sender: user,
       receiver: event.leader,
       event,
       content: user.name + ' want to join ' + event.title
     })
 
-    data = await activityService.createActivity({
+    await activityService.createActivity({
       receiver: user,
       event,
       content: 'You requested to join ' + event.title
@@ -123,7 +123,7 @@ const pending = async (data) => {
 }
 
 const pendingMembersList = async (event, leader) => {
-  if (isLeader(event, leader)) {
+  if (event.isLeader(leader)) {
     try {
       const pendingMembers = await PendingEventMember.find({
         event
@@ -133,10 +133,6 @@ const pendingMembersList = async (event, leader) => {
       throw e
     }
   }
-}
-
-const isLeader = (event, user) => {
-  return event.leader.toString() === user._id.toString()
 }
 
 const acceptJoin = async (id, user) => {
@@ -153,7 +149,7 @@ const acceptJoin = async (id, user) => {
       // throw 404
     }
 
-    if (isLeader(pendingMember.event, user)) {
+    if (pendingMember.event.isLeader(user)) {
       const event = await pendingMember.accept()
       return event
     }
