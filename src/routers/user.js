@@ -46,6 +46,14 @@ router.post('/logoutAll', auth, async (req, res) => {
   }
 })
 
-router.get('/')
+router.get('/user/:id', async (req, res) => {
+  try {
+    const user = await userService.detail(req.params.id)
+    res.send(user)
+  } catch (e) {
+    res.status(e.code).send(e.message)
+  }
+})
+
 
 module.exports = router

@@ -1,4 +1,17 @@
 const User = require('../models/user')
+const NotFound = require('../errors/NotFound')
+
+const findById = async (id) => {
+  try {
+    const user = await User.findById(id)
+    if (!user) {
+      throw new NotFound('User not found!')
+    }
+    return user
+  } catch (e) {
+    e.throwError()
+  }
+}
 
 const create = async (data) => {
   const user = new User(data)
@@ -66,11 +79,22 @@ const addExperience = async (event) => {
   })
 }
 
+const detail = async (id) => {
+  try {
+    const user = await findById(id)
+    await user.populate('experiences').execPopulate()
+    return user
+  } catch (e) {
+    e.throwError()
+  }
+}
+
 module.exports = {
   create,
   login,
   logout,
   logoutAll,
   activity,
-  addExperience
+  addExperience,
+  detail
 }
