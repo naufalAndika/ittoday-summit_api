@@ -76,8 +76,10 @@ const activity = async (user) => {
 const addExperience = async (event) => {
   await event.populate('members.member').execPopulate()
   await event.populate('leader').execPopulate()
+  console.log(event.leader)
   event.members.forEach(async (member) => {
     await member.member.addExperience(event)
+    console.log(member.member)
   })
   await event.leader.addExperience(event)
 }
