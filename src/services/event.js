@@ -37,6 +37,8 @@ const findById = async (id) => {
 const list = async () => {
   try {
     const events = await Event.find({})
+    await Event.populate(events, 'leader')
+    
     return events
   } catch (e) {
     e.throwError()
@@ -67,7 +69,7 @@ const detail = async (id) => {
 
     await event.populate('mountain').execPopulate()
     await event.populate('leader').execPopulate()
-    await User.populate(event.members, 'member')
+    await event.populate(event.members, 'member')
 
     return event
   } catch (e) {
@@ -171,19 +173,24 @@ const changeLeader = async (id, leader) => {
 const finish = async (id) => {
   try {
     const event = await findById(id)
+    console.log(event)
+    // await event.populate('members.member').execPopulate()
+    // console.log(event.members)
     event.members.forEach(async (member) => {
-      let data = await activityService.create({
-        content: 'Finish your event!',
-        action: 'finish:' + event._id,
-        receiver: member.member
-      })
+      console.log(member)
+      // await activityService.create({
+      //   content: 'Finish your event!',
+      //   action: 'finish:' + event._id,
+      //   receiver: member.member
+      // })
     })
-    await activityService.create({
-      content: 'Finish your event!',
-      action: 'finish:' + event._id,
-      receiver: event.leader
-    })
+    // await activityService.create({
+    //   content: 'Finish your event!',
+    //   action: 'finish:' + event._id,
+    //   receiver: event.leader
+    // })
   } catch (e) {
+    console.log(e)
     e.throwError()
   }
 }

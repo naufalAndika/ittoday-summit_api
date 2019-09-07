@@ -20,6 +20,7 @@ const create = async (data) => {
     await activity.save()
     return activity
   } catch (e) {
+    console.log(e)
     e.throwError()
   }
 }

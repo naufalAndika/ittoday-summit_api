@@ -4,6 +4,7 @@ class BaseError extends Error {
   }
 
   throwError () {
+    console.log(e)
     this.code = this.hasOwnProperty('code') ? this.code : 500
     throw this
   }

@@ -35,6 +35,10 @@ const eventSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  leaderFinish: {
+    type: Boolean,
+    default: false
+  },
   leader: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -118,7 +122,7 @@ eventSchema.methods.finish = async function (member) {
 eventSchema.methods.finishAll = function () {
   const event = this
 
-  let finished = true
+  let finished = event.leaderFinish
   event.members.forEach((member) => {
     finished = finished && member.isFinish
   })

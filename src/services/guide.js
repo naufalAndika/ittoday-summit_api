@@ -32,6 +32,7 @@ const create = async (userData, guideData) => {
       token: response.token
     }
   } catch (e) {
+    console.log(e)
     e.throwError()
   } 
 }

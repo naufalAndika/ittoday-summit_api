@@ -24,6 +24,7 @@ const create = async (data) => {
       token
     }
   } catch (e) {
+    console.log(e)
     e.throwError()
   }
 }
@@ -74,9 +75,11 @@ const activity = async (user) => {
 
 const addExperience = async (event) => {
   await event.populate('members.member').execPopulate()
+  await event.populate('leader').execPopulate()
   event.members.forEach(async (member) => {
     await member.member.addExperience(event)
   })
+  await event.leader.addExperience(event)
 }
 
 const detail = async (id) => {
@@ -85,6 +88,7 @@ const detail = async (id) => {
     await user.populate('experiences').execPopulate()
     return user
   } catch (e) {
+    console.log(e)
     e.throwError()
   }
 }

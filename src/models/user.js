@@ -121,7 +121,6 @@ userSchema.methods.addExperience = async function (event) {
   if (user._id.toString() === event.leader.toString()) {
     exp.role = 2
   }
-
   user.experiences = user.experiences.concat(exp)
   await user.save()
 }

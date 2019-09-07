@@ -18,6 +18,7 @@ router.post('/guide', async (req, res) => {
     res.status(201).send(response)
 
   } catch (e) {
+    console.log(e)
     res.status(e.code).send(e.message)
   }
 })
